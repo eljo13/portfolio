@@ -1,0 +1,225 @@
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.*;
+
+class CalcButtons extends JButton {
+    public CalcButtons(String text) {
+        super(text);
+    }
+}
+
+public class Calculator extends JFrame implements ActionListener {
+    private JTextField display;
+    private CalcButtons[] numberButtons;
+    private CalcButtons[] operationButtons;
+
+    private double number1, number2, result;
+    private char oper;
+
+    public Calculator() {
+        setTitle("Calculator");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(300, 400);
+        setLayout(new BorderLayout());
+
+        display = new JTextField("0.");
+        display.setHorizontalAlignment(JTextField.RIGHT);
+        display.setEditable(false);
+        add(display, BorderLayout.NORTH);
+        numberButtons = new CalcButtons[10];
+        for (int i = 0; i < 10; i++) {
+            numberButtons[i] = new CalcButtons(Integer.toString(i));
+            numberButtons[i].addActionListener(this);
+        }
+
+        operationButtons = new CalcButtons[]{
+                new CalcButtons("+"),
+                new CalcButtons("-"),
+                new CalcButtons("*"),
+                new CalcButtons("/"),
+                new CalcButtons("."),
+                new CalcButtons("AC"),
+                new CalcButtons("="),
+                new CalcButtons("%"),
+                new CalcButtons("x!"),
+                new CalcButtons("log"),
+                new CalcButtons("ln"),
+                new CalcButtons("sqrt"),
+                new CalcButtons("x^y"),
+        };
+
+        for (CalcButtons button : operationButtons) {
+            button.addActionListener(this);
+        }
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(4, 4));
+
+        for (int i = 1; i < 10; i++) {
+            buttonPanel.add(numberButtons[i]);
+        }
+        buttonPanel.add(operationButtons[10]); // ln button
+        buttonPanel.add(numberButtons[0]);
+        buttonPanel.add(operationButtons[4]); // Decimal point button
+        buttonPanel.add(operationButtons[0]); // Addition button
+        buttonPanel.add(operationButtons[1]); // Subtraction button
+        buttonPanel.add(operationButtons[2]); // Multiplication button
+        buttonPanel.add(operationButtons[11]); // Square root button
+        buttonPanel.add(operationButtons[5]); // AC button
+        buttonPanel.add(operationButtons[6]); // Equal button
+        buttonPanel.add(operationButtons[3]); // Division button
+        buttonPanel.add(operationButtons[7]); // Percentage button
+        buttonPanel.add(operationButtons[8]); // Factorial button
+        buttonPanel.add(operationButtons[9]); // Log button
+        buttonPanel.add(operationButtons[12]); // Power button
+        add(buttonPanel, BorderLayout.CENTER);
+
+        setVisible(true);
+    }
+
+    public void actionPerformed(ActionEvent calc) {
+        for (int i = 0; i < 10; i++) {
+            if (calc.getSource() == numberButtons[i]) {
+                handleNumericInput(i);
+                return;
+            }
+        }
+
+        if (calc.getSource() == operationButtons[4]) { // Decimal point button
+            handleDecimalInput();
+        } else if (calc.getSource() == operationButtons[5]) { // AC button
+            handleAC();
+        } else if (calc.getSource() == operationButtons[6]) { // Equal button
+            handleEqual();
+        } else if (calc.getSource() == operationButtons[7]) { // Percentage button
+            handlePercentage();
+        } else if (calc.getSource() == operationButtons[8]) { // Factorial button
+            handleFactorial();
+        } else if (calc.getSource() == operationButtons[9]) { // Log button
+            handleLog();
+        } else if (calc.getSource() == operationButtons[10]) { // ln button
+            handleNaturalLog();
+        } else if (calc.getSource() == operationButtons[11]) { // Square root button
+            handleSquareRoot();
+        } else if (calc.getSource() == operationButtons[12]) { // Power button
+            handlePower();
+        } else { // Arithmetic operation buttons
+            handleArithmeticOperation(calc.getActionCommand().charAt(0));
+        }
+    }
+
+    private void handleNumericInput(int num) {
+        if (display.getText().equals("0.")) {
+            display.setText(Integer.toString(num));
+        } else {
+            display.setText(display.getText() + num);
+        }
+    }
+
+    private void handleDecimalInput() {
+        String currentText = display.getText();
+        if (!currentText.contains(".")) {
+            display.setText(currentText + ".");
+        }
+    }
+
+    private void handleAC() {
+        display.setText("0.");
+        number1 = number2 = result = 0;
+        oper = '\0';
+    }
+
+    private void handleEqual() {
+        number2 = Double.parseDouble(display.getText());
+        switch (oper) {
+            case '+':
+                result = number1 + number2;
+                break;
+            case '-':
+                result = number1 - number2;
+                break;
+            case '*':
+                result = number1 * number2;
+                break;
+            case '/':
+                if (number2 != 0) {
+                    result = number1 / number2;
+                } else {
+                    display.setText("Error");
+                    return;
+                }
+                break;
+            case '^':
+                result = Math.pow(number1, number2);
+                break;
+        }
+        display.setText(Double.toString(result));
+        number1 = result;
+        oper = '\0';
+    }
+    private void handlePercentage() {
+        number2 = Double.parseDouble(display.getText());
+        result = number1 * (number2 / 100);
+        display.setText(Double.toString(result));
+        number1 = result;
+        oper = '\0';
+    }
+
+    private void handleFactorial() {
+        int num = Integer.parseInt(display.getText());
+        result = factorial(num);
+        display.setText(Double.toString(result));
+    }
+
+    private void handleLog() {
+        number2 = Double.parseDouble(display.getText());
+        result = Math.log10(number2);
+        display.setText(Double.toString(result));
+        number1 = result;
+        oper = '\0';
+    }
+
+    private void handleNaturalLog() {
+        number2 = Double.parseDouble(display.getText());
+        result = Math.log(number2);
+        display.setText(Double.toString(result));
+        number1 = result;
+        oper = '\0';
+    }
+
+    private void handleSquareRoot() {
+        number2 = Double.parseDouble(display.getText());
+        if (number2 >= 0) {
+            result = Math.sqrt(number2);
+            display.setText(Double.toString(result));
+        } else {
+            display.setText("Error");
+        }
+        number1 = result;
+        oper = '\0';
+    }
+
+    private void handlePower() {
+        number1 = Double.parseDouble(display.getText());
+        oper = '^';
+        display.setText("0.");
+    }
+
+    private void handleArithmeticOperation(char op) {
+        number1 = Double.parseDouble(display.getText());
+        oper = op;
+        display.setText("0.");
+    }
+
+    private double factorial(int n) {
+        if (n == 0 || n == 1) {
+            return 1;
+        }
+        return n * factorial(n - 1);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new Calculator());
+    }
+}
