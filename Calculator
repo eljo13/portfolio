@@ -1,0 +1,147 @@
+<!DOCTYPE html> 
+<html lang="en">
+    <head>
+        <title>Elene's Calculator</title>
+        <style>
+            * {box-sizing: border-box;
+                font-family: Arial, sans-serif;}
+            body{
+                margin: 0; 
+                padding: 0;
+                align-items: center;
+                justify-content: center;
+                display: flex;
+                background-color: #ffccff;
+                height: 300px;
+                margin: 20px 20px 20px 20px;
+            }
+            .calculator{
+                background-color: #ffccff;
+                border-radius: 5px;
+                padding: 20px;
+            
+            }
+            .row{
+                margin-bottom: 10px;
+            }
+            .button{
+                background-color: #ff00ff;
+                border: 1px #9d9d9d;
+                color: #333333;
+			    padding: 10px;
+			    width: 60px;
+			    border-radius: 5px;
+			    cursor: pointer;
+			    font-size: 16px;
+                box-shadow: 0 0 1px #9e009e
+            }
+            .button:hover{
+                background-color: #ff9df2;
+            }
+            .display{
+                background-color: #f2f2f2;
+			    border: none;
+			    padding: 10px;
+			    text-align: right;
+			    font-size: 24px;
+			    border-radius: 5px;
+			    margin-bottom: 10px;
+		}
+            
+
+        </style>
+    </head>
+    <body>
+        <div class="calculator">
+            <input class="display" type="text" value="0" disabled>
+            <div class="row">
+                <button class="button" onclick = "addToDisplay('7')">7</button>
+                <button class="button" onclick = "addToDisplay('8')">8</button>
+                <button class="button" onclick = "addToDisplay('9')">9</button>
+                <button class="button" onclick="setOperator('/')" >/</button>
+            </div>
+            <div class="row">
+                <button class="button" onclick = "addToDisplay('4')">4</button>
+                <button class="button" onclick = "addToDisplay('5')">5</button>
+                <button class="button" onclick = "addToDisplay('6')">6</button>
+                <button class="button" onclick= "setOperator('*')">*</button>
+            </div>
+            <div class="row">
+                <button class="button" onclick = "addToDisplay('1')">1</button>
+                <button class="button" onclick = "addToDisplay('2')">2</button>
+                <button class="button" onclick = "addToDisplay('3')">3</button>
+                <button class="button" onclick = "setOperator('-')" >-</button>
+            </div>
+            <div class="row">
+                <button class="button" onclick = "addToDisplay('0')">0</button>
+                <button class="button" onclick = "addToDisplay('.')">.</button>
+                <button class="button" onclick = "calculate()">=</button>
+                <button class="button" onclick="setOperator('+')">+</button>
+            </div>
+        </div>
+        
+        <script>
+        const display = document.querySelector('.display');
+        const buttons = document.querySelectorAll('.button');
+
+        let firstNum = null;
+        let operator = null;
+        let secondNum = null;
+        let result = null;
+        
+        function addToDisplay(value) {
+            if (display.value == '0'){
+                display.value = value; 
+            }
+            else {
+                display.value += value; 
+            }
+        }
+
+        function setOperator(oper){
+            firstNum = parseFloat(display.value);
+            operator = oper; 
+            display.value = '0'; 
+        }
+
+        function calculate() {
+            secondNum = parseFloat(display.value);
+                switch(operator){
+                    case '+':
+                        result = firstNum + secondNum; 
+                        break;
+                    case '-': 
+                        result = firstNum - secondNum; 
+                        break;
+                    case '*':
+                        result = firstNum * secondNum; 
+                        break;
+                    case '/': 
+                        result = firstNum / secondNum; 
+                        break;
+                }
+                display.value = result; 
+            }
+
+        calculator.onclick = (event) => {
+        const button = event.target.closest('button');
+        if (!button){
+        return;
+        } 
+
+        const buttonValue = button.innerText;
+
+        if (!isNaN(buttonValue) || buttonValue === '.') {
+            addToDisplay(buttonValue);
+        } 
+        else if (buttonValue === '=') {
+        calculate();
+        }
+        else {
+        setOperator(buttonValue);
+        }
+        };
+        </script>
+      </body>
+    </html>
+    
