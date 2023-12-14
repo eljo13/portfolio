@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To-Do App</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    #todoContainer {
+    background-color: #ff66b2;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 400px; 
+    margin: auto; 
+}
+    h1 {
+      background-color: #e64d89;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    #todoInput {
+      width: calc(100% - 20px);
+      margin: 10px;
+      padding: 10px;
+      box-sizing: border-box;
+      border: none;
+      border-bottom: 2px solid #ddd;
+      font-size: 16px;
+      outline: none;
+    }
+    #todoInput:focus {
+      border-bottom: 2px solid #e64d89;
+    }
+    button {
+      background-color: #e64d89;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      width: calc(100% - 20px);
+      font-size: 16px;
+      margin: 0 10px 10px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    li {
+      border-bottom: 1px solid #ddd;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    li:last-child {
+      border-bottom: none;
+    }
+    .completed {
+      text-decoration: line-through;
+      color: #888;
+    }
+    .button-group {
+      display: flex;
+    }
+    .button-group button {
+      margin-right: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="todoContainer">
+    <h1>To-Do App</h1>
+  
+    <input type="text" id="todoInput" placeholder="Add a new to-do...">
+    <button onclick="addTodo()">Add</button>
+
+    <h2>Active To-Do's</h2>
+    <ul id="todoList"></ul>
+
+    <h2>Completed To-Do's</h2>
+    <ul id="completedList"></ul>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      loadTodos();
+    });
+
+    function addTodo() {
+      var todoInput = document.getElementById('todoInput');
+      var todoText = todoInput.value.trim();
+      if (todoText === '') return;
+
+      var todo = {
+        text: todoText,
+        completed: false,
+        date: new Date().toLocaleString()
+      };
+
+      var todos = JSON.parse(localStorage.getItem('todos')) || [];
+      todos.push(todo);
+      localStorage.setItem('todos', JSON.stringify(todos));
+
+      todoInput.value = '';
+      loadTodos();
+    }
+
+    function loadTodos() {
+      var todos = JSON.parse(localStorage.getItem('todos')) || [];
+      var todoList = document.getElementById('todoList');
+      var completedList = document.getElementById('completedList');
+
+      todoList.innerHTML = '';
+      completedList.innerHTML = '';
+
+      todos.forEach(function(todo, index) {
+        var listItem = document.createElement('li');
+        listItem.innerHTML = `
+          <span class="${todo.completed ? 'completed' : ''}">${todo.text} - ${todo.date}</span>
+          <div class="button-group">
+            <button onclick="toggleComplete(${index})">${todo.completed ? 'Undo' : 'Complete'}</button>
+            <button onclick="removeTodo(${index})">Remove</button>
+            <button onclick="editTodo(${index})">Edit</button>
+          </div>
+        `;
+
+        if (todo.completed) {
+          completedList.appendChild(listItem);
+        } else {
+          todoList.appendChild(listItem);
+        }
+      });
+    }
+
+    function toggleComplete(index) {
+      var todos = JSON.parse(localStorage.getItem('todos')) || [];
+      todos[index].completed = !todos[index].completed;
+      localStorage.setItem('todos', JSON.stringify(todos));
+      loadTodos();
+    }
+
+    function removeTodo(index) {
+      var todos = JSON.parse(localStorage.getItem('todos')) || [];
+      todos.splice(index, 1);
+      localStorage.setItem('todos', JSON.stringify(todos));
+      loadTodos();
+    }
+
+    function editTodo(index) {
+      var todos = JSON.parse(localStorage.getItem('todos')) || [];
+      var updatedText = prompt('Edit your to-do:', todos[index].text);
+      if (updatedText !== null) {
+        todos[index].text = updatedText;
+        localStorage.setItem('todos', JSON.stringify(todos));
+        loadTodos();
+      }
+    }
+  </script>
+
+</body>
+</html>
