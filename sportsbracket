@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sports Bracket Generator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #343a40; /* Dark background color */
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    h2 {
+      color: #f8f9fa;
+    }
+
+    label {
+      font-weight: bold;
+      margin-right: 10px;
+      color: #f8f9fa;
+    }
+
+    input, select {
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #f8f9fa;
+      border-radius: 6px;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #f8f9fa;
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 15px 30px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease-in-out;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #bracket {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .round {
+      display: flex;
+      margin-bottom: 30px;
+    }
+
+    .match {
+      margin: 0 15px;
+      padding: 20px;
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #f8f9fa;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .match:hover {
+      transform: scale(1.05);
+    }
+
+    
+    @media (max-width: 768px) {
+      h2 {
+        font-size: 24px;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h2>Sports Bracket Generator</h2>
+
+  <label for="tournament-name">Tournament Name:</label>
+  <input type="text" id="tournament-name">
+
+  <br>
+
+  <label for="start-date">Start Date:</label>
+  <input type="date" id="start-date">
+
+  <label for="end-date">End Date:</label>
+  <input type="date" id="end-date">
+
+  <br>
+
+  <label for="num-teams">Number of Teams:</label>
+  <input type="number" id="num-teams" min="2">
+
+  <br>
+
+  <button onclick="generateBracket()">Generate Bracket</button>
+
+  <div id="bracket"></div>
+
+  <script>
+    function generateBracket() {
+      const tournamentName = document.getElementById('tournament-name').value;
+      const startDate = document.getElementById('start-date').value;
+      const endDate = document.getElementById('end-date').value;
+      const numTeams = document.getElementById('num-teams').value;
+
+      
+      if (!tournamentName || !startDate || !endDate || !numTeams) {
+        alert('Please fill in all fields.');
+        return;
+      }
+
+      const startDateObj = new Date(startDate);
+      const endDateObj = new Date(endDate);
+
+      if (isNaN(startDateObj.getTime()) || isNaN(endDateObj.getTime()) || startDateObj > endDateObj) {
+        alert('Invalid date range. Please enter valid dates.');
+        return;
+      }
+
+      if (numTeams % 2 !== 0) {
+        alert('Number of teams must be an even number.');
+        return;
+      }
+
+     
+      document.getElementById('bracket').innerHTML = '';
+
+     
+      const numRounds = Math.log2(numTeams);
+      let teams = [];
+
+      for (let i = 1; i <= numTeams; i++) {
+        teams.push(`Team ${i}`);
+      }
+
+      for (let round = 1; round <= numRounds; round++) {
+        const roundDiv = document.createElement('div');
+        roundDiv.className = 'round';
+
+        const numMatches = 2 ** (numRounds - round);
+
+        for (let match = 1; match <= numMatches; match++) {
+          const matchDiv = document.createElement('div');
+          matchDiv.className = 'match';
+          matchDiv.innerText = `Match ${round}-${match}\n${teams.shift()} vs ${teams.shift()}`;
+          roundDiv.appendChild(matchDiv);
+        }
+
+        document.getElementById('bracket').appendChild(roundDiv);
+      }
+    }
+  </script>
+</body>
+</html>
